@@ -2,7 +2,11 @@ from faker import Faker
 import requests
 import parsel
 import json
-import re
+import re,logging
+import sqlite3
+import datetime
+import os
+from time import strftime,gmtime
 
 TYPES=["PHONE","DESKTOP","RANDOM"]
 url = 'https://cn.bing.com'
@@ -19,19 +23,23 @@ def getFakerHeaders(TYPE):
 
 def getBingImage():
     headers= {"user-agent": getFakerHeaders("DESKTOP")}
-    print(headers)
+    logging.info("本次Headers:"+headers["user-agent"])
     respond=requests.get(url=url,headers=headers)
     respond.encoding = respond.apparent_encoding
     selector = parsel.Selector(respond.text, base_url=url)
-    return "https://s.cn.bing.net"+selector.css('#preloadBg::attr(href)').extract_first()
+    url1=str(selector.css('#preloadBg::attr(href)').extract_first())
+    url1=confirmURL(url1)
+    return url1
 
 def getBingVerticalImage():
     headers= {"user-agent": getFakerHeaders("PHONE")}
-    print(headers)
     respond=requests.get(url=url,headers=headers)
     respond.encoding = respond.apparent_encoding
     selector = parsel.Selector(respond.text, base_url=url)
-    return "https://s.cn.bing.net"+selector.css('#preloadBg::attr(href)').extract_first()
+    # return selector.css('#preloadBg::attr(href)').extract_first()
+    url1=str(selector.css('#preloadBg::attr(href)').extract_first())
+    url1=confirmURL(url1)
+    return url1
 
 def getBingDescription():
     headers = {
@@ -39,6 +47,13 @@ def getBingDescription():
     }
     res = requests.get(url, headers=headers)
     res.encoding = res.apparent_encoding
+
+    # res1 = requests.get(r"https://cn.bing.com/HPImageArchive.aspx?format=js&idx=0&n=1&mkt=zh-CN", headers=headers)
+    # res1.encoding = res1.apparent_encoding
+    # data1=json.loads(res1.content)
+    # out_copyright=data1['images'][0]["copyright"]
+    # out_copyright=out_copyright.encode('utf-8')
+
     ret = re.search("var _model =(\{.*?\});", res.text)
     if not ret:
         return
@@ -48,6 +63,17 @@ def getBingDescription():
         'headline': image_content['Headline'],
         'title': image_content['Title'],
         'description': image_content['Description'],
-        'image_url': image_content['Image']['Url'],
-        'main_text': image_content['QuickFact']['MainText']
+      #  'image_url': image_content['Image']['Url'],
+        'main_text': image_content['QuickFact']['MainText'],
+        # 'copyright': out_copyright
     }
+
+
+def confirmURL(url):
+    url_head=str(url)
+    result=""
+    if(url_head[0:6]=="/th?id"):
+        result="https://s.cn.bing.net"+url_head
+        return result
+    else:
+        return str(url)
