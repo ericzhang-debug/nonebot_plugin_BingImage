@@ -21,7 +21,7 @@ def getFakerHeaders(TYPE):
         return fake.user_agent()
 
 
-def getBingImage():
+def getBingImageURL():
     headers= {"user-agent": getFakerHeaders("DESKTOP")}
     logging.info("本次Headers:"+headers["user-agent"])
     respond=requests.get(url=url,headers=headers)
@@ -31,7 +31,7 @@ def getBingImage():
     url1=confirmURL(url1)
     return url1
 
-def getBingVerticalImage():
+def getBingVerticalImageURL():
     headers= {"user-agent": getFakerHeaders("PHONE")}
     respond=requests.get(url=url,headers=headers)
     respond.encoding = respond.apparent_encoding
@@ -63,9 +63,7 @@ def getBingDescription():
         'headline': image_content['Headline'],
         'title': image_content['Title'],
         'description': image_content['Description'],
-      #  'image_url': image_content['Image']['Url'],
         'main_text': image_content['QuickFact']['MainText'],
-        # 'copyright': out_copyright
     }
 
 
@@ -77,3 +75,11 @@ def confirmURL(url):
         return result
     else:
         return str(url)
+
+async def getImage(url):
+    try:
+        r=requests.get(url)
+        img=r.text.strip()
+        return img
+    except Exception:
+        return "ERROR"
