@@ -14,7 +14,7 @@ _✨ 🖼️获取Bing每日风景图 ✨_
 <a href="./LICENSE">
     <img src="https://img.shields.io/github/license/ericzhang-debug/nonebot_plugin_BingImage.svg" alt="license">
 </a>
-<a href="https://pypi.python.org/pypi/nonebot-plugin-example">
+<a href="https://pypi.python.org/pypi/nonebot-plugin-BingImage">
     <img src="https://img.shields.io/pypi/v/nonebot_plugin_BingImage.svg" alt="pypi">
 </a>
 <img src="https://img.shields.io/badge/python-3.8+-blue.svg" alt="python">
